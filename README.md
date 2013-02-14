@@ -1,10 +1,10 @@
-[dix : recherches rapides de paquets Debian](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
+[dix : recherches rapides de paquets Debian ou Ubuntu](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
 ===
 Affiche les versions disponibles, les versions installées...
 
 [Page de description](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
 
-Equivalent pour Debian de la commande eix de Gentoo.
+Equivalent pour Debian ou Ubuntu de la commande eix de Gentoo.
 ---
 
 Avec bash_completion.
