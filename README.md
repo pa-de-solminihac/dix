@@ -9,6 +9,8 @@ Equivalent pour Debian ou Ubuntu de la commande eix de Gentoo.
 
 Avec bash_completion.
 
+Utilisation
+---
 
     Usage : dix [options] <motif>
 
@@ -31,3 +33,4 @@ Avec bash_completion.
         -I, --not-installed   limite les resultats aux paquets non installes
         -n, --nocolor         desactive les couleurs
 
+[En savoir plus](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
