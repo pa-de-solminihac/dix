@@ -2,7 +2,7 @@
 ===
 Affiche les versions disponibles, les versions installées...
 
-[Description plus détaillée](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
+[Page de descriptions](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
 
 Equivalent pour Debian de la commande eix de Gentoo.
 ---
