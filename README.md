@@ -1,8 +1,6 @@
 [dix : recherches rapides de paquets Debian ou Ubuntu](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
 ===
-Affiche les versions disponibles, les versions installées...
-
-[Page de description](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
+Recherches par expressions régulières, affiche les versions disponibles, les versions installées...
 
 Equivalent pour Debian ou Ubuntu de la commande eix de Gentoo.
 ---
@@ -33,4 +31,6 @@ Utilisation
         -I, --not-installed   limite les resultats aux paquets non installes
         -n, --nocolor         desactive les couleurs
 
-[En savoir plus](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
+En savoir plus
+---
+[Page de description](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
