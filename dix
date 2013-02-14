@@ -1,0 +1,171 @@
+#!/bin/bash
+# Description : dix est un equivalent pour Debian de eix
+# Auteur : Pierre-Alexis de Solminihac
+
+usage() {
+    if [ "$1" = -h ]
+    then
+        exec 1>&2
+    fi
+
+    echo "Usage : `basename $0` [options] <motif>"
+    echo 
+    echo "    Pour afficher l'aide : `basename $0` --help"
+
+    if [ "$1" = -h ]
+    then
+        cat <<EOF
+
+Recherche les versions disponibles ou installees des paquets 
+
+Options :
+    -h, --help            affiche cette aide
+    -e, --exact           limite les resultats aux paquets dont le nom
+                            correspond exactement au motif
+    --normal (defaut)     limite les resultats aux paquets dont le nom
+                            contient le motif
+    -s, --search          limite les resultats aux paquets dont le nom
+                            ou la description courte correspondent au motif
+    -f, --fullsearch      limite les resultats aux paquets dont le nom,
+                            la description courte ou la description longue 
+                            correspondent au motif
+    -i, --installed       limite les resultats aux paquets installes
+    -I, --not-installed   limite les resultats aux paquets non installes
+    -n, --nocolor         desactive les couleurs
+
+EOF
+        exit 0
+    else
+        exit 1
+    fi
+}
+
+# help
+if [ "$#" == 0 ]
+then
+    usage
+fi
+
+while [ $# -ne 0 ]
+do
+    case "$1" in
+        -h|--help)
+            MODE='help';
+            usage -h
+            ;;
+        -e|--exact)
+            MODE='exact';
+            ;;
+        -s|--search)
+            MODE='search';
+            ;;
+        -f|--fullsearch)
+            MODE='fullsearch';
+            ;;
+        -n|--nocolor)
+            COLOR='nocolor';
+            ;;
+        -i|--installed)
+            ONLYINSTALLED='1';
+            ;;
+        -I|--not-installed)
+            ONLYNOTINSTALLED='1';
+            ;;
+        *)
+            PACKAGE=$1;
+            ;;
+    esac
+    shift
+done
+
+if [ "$PACKAGE" == "" ]
+then
+    usage
+fi
+
+# definition des couleurs
+if [ "$COLOR" != "nocolor" ]
+then
+    RED=`echo -e '\033[0m\033[1;31m'`
+    DEEPGREEN=`echo -e '\033[0m\033[32m'`
+    GREEN=`echo -e '\033[0m\033[1;32m'`
+    NORMAL=`echo -e '\033[0m'`
+fi
+
+# echappement du motif de recherche
+PACKAGE_ESCAPED="`echo $PACKAGE | sed 's/+/\\\\+/g' | sed 's/(/\\\(/g' | sed 's/^0/\\\0/'`";
+
+# type de recherche
+case $MODE in
+    'exact')
+        LISTE=`apt-cache --no-generate search --names-only "$PACKAGE_ESCAPED" | cut -d" " -f 1 | grep -i "^$PACKAGE *$"`;
+        ;;
+    'search')
+        LISTE=`apt-cache --no-generate search "$PACKAGE_ESCAPED" | grep -i "$PACKAGE"`;
+        ;;
+    'fullsearch')
+        LISTE=`apt-cache --no-generate search "$PACKAGE_ESCAPED"`;
+        ;;
+    *)
+        LISTE=`apt-cache --no-generate search --names-only "$PACKAGE_ESCAPED" | grep -i "^[^ ]*$PACKAGE[^ ]* - "`;
+        ;;
+esac
+
+# teste les capacites de sort
+VERSIONSORT_ABLE=$(echo | sort -V 2>&1 1>/dev/null && echo 1)
+if [ "$VERSIONSORT_ABLE" == "1" ]
+then
+    SORTFLAG=" -V";
+else
+    SORTFLAG="";
+fi
+
+# pour chaque package trouve
+CLEANLIST="`echo "$LISTE" | awk '{print $1}' | sort $SORTFLAG`"
+ALLVERSIONS=`dpkg --list $CLEANLIST 2>/dev/null | grep '^i' | awk '{print $2" "$3}'`
+if [[ "$ONLYINSTALLED" == '1' ]]
+then
+    PACKAGES_LIST=$(echo "$ALLVERSIONS" | sed 's/ .*$//g' | sort $SORTFLAG);
+else
+    PACKAGES_LIST="$CLEANLIST";
+fi
+for package in $PACKAGES_LIST; do 
+    # affiche les versions installees, pas uniquement dans les versions disponibles !
+    INSTALLES=$(echo "$ALLVERSIONS" | grep "^$package " | sed 's/^[^ ]* //' | sed "s/^/    $GREEN/" | sed "s/$/ installed$NORMAL/")
+    if [[ "$ONLYINSTALLED" == '1' && "$INSTALLES" == "" ]]
+    then
+        continue
+    fi
+    if [[ "$ONLYNOTINSTALLED" == '1' && "$INSTALLES" != "" ]]
+    then
+        continue
+    fi
+    # affiche la description et la homepage
+    # TODO: le --no-generate show genere un warning "cache desynchronise"
+    SHORTDESC=$(apt-cache --no-generate show "$package" 2>&1 | grep "^Description[^ ]*:\|^Homepage:" | sort | uniq | sed "s/^Description[^ ]*: /$RED$package$NORMAL - /g" | sed "s/Homepage:/   $DEEPGREEN Homepage:$NORMAL/g")
+    # SHORTDESC=$(dpkg --print-avail "$package" 2>&1 | grep "^Description[^ ]*:\|^Homepage:" | sed "s/^Description[^ ]*: /$RED$package$NORMAL - /g" | sed "s/Homepage:/   $DEEPGREEN Homepage:$NORMAL/g")
+    DESCRIPTION=$(echo "$SHORTDESC" | grep "$package" | head -n 1);
+    HOMEPAGE=$(echo "$SHORTDESC" | grep "Homepage:" | head -n 1);
+    # affiche les versions disponibles
+    DISPONIBLES=$(apt-cache --no-generate showpkg "$package" | grep '(/var/lib/apt/lists/' | sed 's/(\/var\/lib\/apt\/lists\/[^(]*_dists_//g' | sed 's/_[^)]*)//g' | sed 's/ (\/var\/lib\/dpkg\/status)//g' | sed 's/^/    /g' | sort $SORTFLAG | uniq);
+    if [ "$DESCRIPTION" != "" ]
+    then
+        BLOC="$DESCRIPTION"
+        if [ "$HOMEPAGE" != "" ]
+        then
+            BLOC="$BLOC\n$HOMEPAGE"
+        fi
+        if [ "$DISPONIBLES" != "" ]
+        then
+            BLOC="$BLOC\n$DISPONIBLES"
+        fi
+        if [ "$INSTALLES" != "" ]
+        then
+            BLOC="$BLOC\n$INSTALLES"
+        fi
+        # affichage des resultats
+        echo -e "$BLOC";
+    else 
+        echo "$RED$package$NORMAL - no version";
+    fi
+done
