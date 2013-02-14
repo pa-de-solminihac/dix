@@ -1,10 +1,12 @@
-dix
+dix : recherches rapides de paquets Debian
 ===
+Affiche les versions disponibles, les versions installées...
 
-Recherche rapide dans les paquets Debian (versions disponibles, versions installées...)
----------------------------------------------------------------------------------------
+Equivalent pour Debian de la commande eix de Gentoo.
+---
 
-Equivalent pour Debian de la commande eix de Gentoo. Avec bash_completion.
+Avec bash_completion.
+
 
     Usage : dix [options] <motif>
 
