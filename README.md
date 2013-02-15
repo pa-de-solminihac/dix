@@ -1,5 +1,6 @@
 [dix : recherches rapides de paquets Debian ou Ubuntu](http://www.nocturne-jdr.fr/blog/equivalent-eix-pour-debian-ubuntu/)
 ===
+
 Recherches par expressions régulières, affiche les versions disponibles, les versions installées...
 
 Equivalent pour Debian ou Ubuntu de la commande eix de Gentoo.
