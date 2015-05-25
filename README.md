@@ -3,10 +3,10 @@
 
 Recherches par expressions régulières, affiche les versions disponibles, les versions installées...
 
-Equivalent pour Debian ou Ubuntu de la commande eix de Gentoo.
+Equivalent `eix` pour Debian ou Ubuntu
 ---
 
-Avec bash_completion.
+Équivalent simple de la commande [eix](https://wiki.gentoo.org/wiki/Eix) de Gentoo, avec bash_completion.
 
 Utilisation
 ---
